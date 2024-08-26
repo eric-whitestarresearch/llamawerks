@@ -1,0 +1,5 @@
+---
+host: db.example.com
+port: 32017
+username: db_user
+password: db_password
