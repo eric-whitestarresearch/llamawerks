@@ -15,16 +15,20 @@
 
 import yaml
 from pymongo import MongoClient
+from pymongo.errors import ConnectionFailure
 from bson import ObjectId, json_util
 import urllib.parse
-import json
-import re
 from jsonschema import validate, ValidationError
 import json
 import queue
 from flask import current_app
+from bson.json_util import dumps
+from json import loads
 
 class DBConfigValidationError(ValidationError):
+  pass
+
+class DBConnectionFailure(ConnectionFailure):
   pass
 
 class Database:
@@ -40,6 +44,7 @@ class Database:
   
   conf_home = "/opt/llamawerks/conf"
   connection_pool = queue.Queue()
+  database_name = ""
 
   def __init__(self) -> None:
     """
@@ -64,7 +69,13 @@ class Database:
     password = urllib.parse.quote_plus(db_config['password'])
     for _ in range(db_config['max_connections']):
       connection =  MongoClient(f"mongodb://{username}:{password}@{db_config['host']}:{db_config['port']}")
+      try:
+        connection.admin.command('ping') #Make sure the server is alive
+      except ConnectionFailure as e:
+        raise DBConnectionFailure(f"Could not connect to database {db_config['host']} on port {db_config['port']} \n" + str(e))
+
       self.connection_pool.put(connection)
+      self.database_name = db_config['database']
 
 
   def validate_config(self, config) -> None:
@@ -85,13 +96,14 @@ class Database:
       'properties': {
         'host': {'type': 'string'},
         'port': {'type': 'integer'},
+        'database': {'type': 'string'},
         'username': {'type': 'string'},
         'password': {'type': 'string'},
         'max_connections': {'type': 'integer'}
       },
-      'required': ['host', 'port', 'username', 'password', 'max_connections']}
+      'required': ['host', 'port', 'database', 'username', 'password', 'max_connections']}
 
-    validate(config, schema) #If we validate nothing happend, if we fail a ValidationError exception is thrown
+    validate(config, schema) #If we validate nothing happens, if we fail a ValidationError exception is thrown
 
     return None
   
@@ -136,6 +148,9 @@ class Database:
 
     Parameters:
       self (Database): The object itself.
+
+    Returns:
+      None
     """
 
     for _ in range(self.connection_pool.qsize()):
@@ -143,6 +158,56 @@ class Database:
       connection.close()
 
     return
+
+  def find_all_in_collection(self, collection, filter):
+    """
+    Find all documents in a collection
+
+    Parameters:
+      self (Database): The object itself.
+      collection (String): The name of the collection to search in
+      filter (Dict): A dictonary containing the filter to search by 
+
+    Returns:
+      List: A list of all of the documents found
+    """
+
+    connection = self.get_db_connection()
+    db = connection[self.database_name]
+    db_collection = db[collection]
+
+    try:
+      results = db_collection.find(filter)  
+    finally:
+      print("In finally")
+      self.return_db_connection(connection)
+
+    documents = (loads(dumps(results)))
+
+    return documents
+  
+  def insert_document(self, collection, document):
+    """
+    A function to insert a new doument
+
+    Parameters:
+      self (Database): The instantiation of the Database class
+      document (Dict): A dictonary with the document to inset into a collection
+
+    Returns:
+      Str: A 24 character hexadecmal string that represents the id of the new object
+    """
+
+    connection = self.get_db_connection()
+    db = connection[self.database_name]
+    db_collection = db[collection]
+
+    try:
+      result = db_collection.insert_one(document)
+    finally:
+      self.return_db_connection(connection)
+    
+    return str(result.inserted_id)
 
 
     
