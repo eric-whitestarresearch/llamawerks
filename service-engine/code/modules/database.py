@@ -179,12 +179,37 @@ class Database:
     try:
       results = db_collection.find(filter)  
     finally:
-      print("In finally")
       self.return_db_connection(connection)
 
     documents = (loads(dumps(results)))
 
     return documents
+  
+  def find_one_in_collection(self, collection, filter):
+    """
+    Finds a document in a collection
+
+    Parameters:
+      self (Database): The object itself.
+      collection (String): The name of the collection to search in
+      filter (Dict): A dictonary containing the filter to search by 
+
+    Returns:
+      Dict: The found document
+    """
+
+    connection = self.get_db_connection()
+    db = connection[self.database_name]
+    db_collection = db[collection]
+
+    try:
+      result = db_collection.find_one(filter)  
+    finally:
+      self.return_db_connection(connection)
+
+    document = (loads(dumps(result)))
+
+    return document
   
   def insert_document(self, collection, document):
     """
@@ -209,5 +234,51 @@ class Database:
     
     return str(result.inserted_id)
 
+  def update_document(self, collection, filter, values_to_update, upsert=False):
+    """
+    Finds a document in a collection
 
+    Parameters:
+      self (Database): The object itself.
+      collection (String): The name of the collection to search in
+      filter (Dict): A dictonary containing the filter to search by 
+      values_to_updates (Dict): The values to update in the document
+      upsert (Bool): Insert a new document if it does not exist, defaults to false
+
+    Returns:
+      Int: The count of updated documents
+    """
+
+    connection = self.get_db_connection()
+    db = connection[self.database_name]
+    db_collection = db[collection]
+
+    try:
+      result = db_collection.update_one(filter, { "$set": values_to_update}, upsert)  
+    finally:
+      self.return_db_connection(connection)
+
+    return result.modified_count
+
+  def delete_document(self, collection, filter):
+    """
+    Deletes document(s) in a collection
+
+    Parameters:
+      self (Database): The object itself.
+      collection (String): The name of the collection to search in
+      filter (Dict): A dictonary containing the filter to search by 
     
+    Returns:
+      Int: The count of deleted documents
+    """
+    connection = self.get_db_connection()
+    db = connection[self.database_name]
+    db_collection = db[collection]
+
+    try:
+      result = db_collection.delete_many(filter)  
+    finally:
+      self.return_db_connection(connection)
+
+    return result.deleted_count

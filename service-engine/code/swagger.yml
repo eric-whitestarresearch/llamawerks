@@ -15,20 +15,37 @@
 
 openapi: 3.0.0
 info:
-  title: "RP Flask REST API"
-  description: "An API about people and notes"
-  version: "1.0.0"
+  title: "Llamawerks Service Engine API"
+  description: "API for Llamawerks service engine"
+  version: "0.1.0"
 servers:
   - url: "/api"
 
 components:
   schemas:
+    data_collections_deleted:
+      type: object
+      properties:
+        data_collections_deleted:
+          type: integer
+    data_collection_updated:
+      type: object
+      properties:
+        data_collection_updated:
+          type: integer
+    data_collection_created:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 66ce0c6f2ee6c75d61eef299
     data_collection:
       type: "object"
       required:
         - collection_name
         - pack
         - fields
+      additionalProperties: false
       properties:
         collection_name:
           type: "string"
@@ -68,21 +85,41 @@ components:
       required: True
       schema:
         type: "string"
+    collection_name:
+      name: "data_collection_name"
+      description: "The name of the data collection to use"
+      in: path
+      required: True
+      schema:
+        type: "string"
+    collection_name_in_query:
+      name: "data_collection_name"
+      description: "The name of the data collection to use"
+      in: query
+      required: False
+      schema:
+        type: "string"
+    collection_name_in_query_req:
+      name: "data_collection_name"
+      description: "The name of the data collection to use"
+      in: query
+      required: True
+      schema:
+        type: "string"
 paths:
-  /service_engine/dosomething:
-    get:
-      operationId: "service_engine.do_something"
-      responses:
-        "200":
-          description: "Something happened"
   /service_engine/{pack_name}/data_collection:
     get:
-      operationId: "service_engine.get_all_data_collections"
+      operationId: "service_engine.get_data_collections"
       parameters:
         - $ref: "#/components/parameters/pack_name"
+        - $ref: "#/components/parameters/collection_name_in_query"
       responses:
         "200":
           description: "Get all of the data collections"
+        "204":
+          description: "There are no data collections in the pack"
+        "404":
+          description: "Could not find the data collection in the pack"
     put:
       operationId: "service_engine.create_data_collection"
       parameters:
@@ -96,11 +133,68 @@ paths:
             schema:
               $ref: "#/components/schemas/data_collection"
       responses:
-        "200":
+        "201":
           description: "Successfully created the data collection"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/data_collection_created"
         "400":
-          description: "The body does not meet the scema requirements"
+          description: "The body does not meet the schema requirements"
         "409":
           description: "The data collection already exists in this pack"
         "422":
           description: "The pack name specified in the URI and the data collection defination do not match"
+    patch:
+      operationId: "service_engine.update_data_collection"
+      parameters:
+        - $ref: "#/components/parameters/pack_name"
+      requestBody:
+        x-body-name: "data_collection_definition"
+        description: "The definition of the data collection"
+        required: True
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/data_collection"
+      responses:
+        "202":
+          description: "Data collection defination updated"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/data_collection_updated"
+        "208":
+          description: "Data collection defination matched existing defination, no change occured "
+        "400":
+          description: "The body does not meet the schema requirements"
+        "404":
+          description: "The data collection does not exist in the pack. Create it using the put method"
+        "422":
+          description: "The pack name specified in the URI and the data collection defination do not match"
+    delete:
+      operationId: "service_engine.delete_data_collection"
+      parameters:
+        - $ref: "#/components/parameters/pack_name"
+        - $ref: "#/components/parameters/collection_name_in_query_req"
+      responses:
+        "200":
+          description: "Data collection deleted"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/data_collections_deleted"
+
+  # /service_engine/{pack_name}/data_collection/{collection_name}:
+  #   get:
+  #     operationId: "service_engine.get_data_collection"
+  #     parameters:
+  #       - $ref: "#/components/parameters/pack_name"
+  #       - $ref: "#/components/parameters/collection_name"
+  #     responses:
+  #       "200":
+  #         description: "Get all of the data collections"
+  #       "404":
+  #         description: "Could not find the data collection in the pack"
+    
+        
