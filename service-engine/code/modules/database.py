@@ -52,8 +52,6 @@ class Database:
 
     Parameters:
       self (Database): The object itself
-      database (Str): The name of the database to connect to
-      collection (Str): The name of the collection to connect to
     """
 
     db_conf_file=self.conf_home+"/db.yaml"
@@ -282,3 +280,98 @@ class Database:
       self.return_db_connection(connection)
 
     return result.deleted_count
+  
+  def create_index(self, collection, keys, unique):
+    """
+    Creates a collection in the database
+
+    Parameters:
+      self (Database): The object itself.
+      collection (String): The name of the collection to create
+      keys (List or Str): Either a list of keys names to create the index for onn compound index, or just a string for a single key
+
+
+    Returns:
+      Str
+    """
+
+    connection = self.get_db_connection()
+    db = connection[self.database_name]
+    db_collection = db[collection]
+
+    try:
+      result = db_collection.create_index(keys, background=True, unique=unique)
+    finally:
+      self.return_db_connection(connection)
+
+    return result
+  
+  def get_index_info(self, collection):
+    """
+    Returns the existing indexes in the collection
+
+    Parameters:
+      self (Database): The object itself.
+      collection (String): The name of the collection to fetch the index for
+
+    Returns:
+      Dict: A dictonary of the index. The dictonary key is the index name, the value is the index info
+    """
+
+    connection = self.get_db_connection()
+    db = connection[self.database_name]
+    db_collection = db[collection]
+
+    try:
+      result = db_collection.index_information()
+    finally:
+      self.return_db_connection(connection)
+
+    return result
+  
+  def delete_index(self, collection, index_name):
+    """
+    Drops an index from a collection
+    
+    Parameter:
+      self (Database): The object itself.
+      collection (String): The name of the collection is in
+      index_name (String): The name of the index to drop
+
+    Returns:
+      None
+    """
+
+    connection = self.get_db_connection()
+    db = connection[self.database_name]
+    db_collection = db[collection]
+
+    try:
+      db_collection.drop_index(index_name)
+    finally:
+      self.return_db_connection(connection)
+
+    return
+  
+  def delete_collection(self, collection):
+    """
+    Drops a collection
+    
+    Parameter:
+      self (Database): The object itself.
+      collection (String): The name of the collection to drop
+
+    Returns:
+      None
+    """
+   
+    connection = self.get_db_connection()
+    db = connection[self.database_name]
+    db_collection = db[collection]
+
+    try:
+      db_collection.drop()
+    finally:
+      self.return_db_connection(connection)
+
+    return

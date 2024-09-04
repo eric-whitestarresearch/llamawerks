@@ -39,15 +39,20 @@ components:
         id:
           type: string
           example: 66ce0c6f2ee6c75d61eef299
+        indexes:
+          type: array
+          example:
+            - name_1
+            - color_1
     data_collection:
       type: "object"
       required:
-        - collection_name
+        - name
         - pack
         - fields
       additionalProperties: false
       properties:
-        collection_name:
+        name:
           type: "string"
           description: "The name of this data collection"
         pack:
@@ -61,6 +66,8 @@ components:
               - name
               - type
               - required
+              - index
+              - unique
             properties:
               name:
                 type: string
@@ -77,10 +84,16 @@ components:
               required:
                 type: boolean
                 description: "Is this a required or optional field"
+              index:
+                type: boolean
+                description: "Is this field an index, must be of string type"
+              unique:
+                type: boolean
+                description: "If this is an index field, is it unique"
   parameters:
     pack_name:
       name: "pack_name"
-      description: "The name of the pack the item is in"
+      description: "The name of the pack the component is in"
       in: path
       required: True
       schema:
@@ -133,6 +146,12 @@ paths:
             schema:
               $ref: "#/components/schemas/data_collection"
       responses:
+        "200":
+          description: "The data collection already exists, no action taken"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/data_collection_created"
         "201":
           description: "Successfully created the data collection"
           content:
@@ -141,10 +160,8 @@ paths:
                 $ref: "#/components/schemas/data_collection_created"
         "400":
           description: "The body does not meet the schema requirements"
-        "409":
-          description: "The data collection already exists in this pack"
         "422":
-          description: "The pack name specified in the URI and the data collection defination do not match"
+          description: "The pack name specified in the URI and the data collection definition do not match"
     patch:
       operationId: "service_engine.update_data_collection"
       parameters:
@@ -159,19 +176,23 @@ paths:
               $ref: "#/components/schemas/data_collection"
       responses:
         "202":
-          description: "Data collection defination updated"
+          description: "Data collection definition updated"
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/data_collection_updated"
         "208":
-          description: "Data collection defination matched existing defination, no change occured "
+          description: "Data collection definition matched existing definition, no change occured "
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/data_collection_updated"
         "400":
           description: "The body does not meet the schema requirements"
         "404":
           description: "The data collection does not exist in the pack. Create it using the put method"
         "422":
-          description: "The pack name specified in the URI and the data collection defination do not match"
+          description: "The pack name specified in the URI and the data collection definition do not match"
     delete:
       operationId: "service_engine.delete_data_collection"
       parameters:
@@ -184,17 +205,5 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/data_collections_deleted"
-
-  # /service_engine/{pack_name}/data_collection/{collection_name}:
-  #   get:
-  #     operationId: "service_engine.get_data_collection"
-  #     parameters:
-  #       - $ref: "#/components/parameters/pack_name"
-  #       - $ref: "#/components/parameters/collection_name"
-  #     responses:
-  #       "200":
-  #         description: "Get all of the data collections"
-  #       "404":
-  #         description: "Could not find the data collection in the pack"
     
         
