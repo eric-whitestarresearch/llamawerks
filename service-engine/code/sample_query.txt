@@ -1,0 +1,11 @@
+{ $and: [ { scores: 75, name: "Greg Powell" } ] }
+{ $or: [ { version: 4 }, { name: "Andrea Le" } ] }
+{ $nor: [ { price: 1.99 }, { sale: true } ]  }
+{ name: { $not: { $eq: "Andrea Le" } } }
+{ age: { $lt: 7 } }
+{ age: { $lte: 7 } }
+{ age: { $gt: 7 } }
+{ age: { $gt: 7 } }
+{ name: { $in: [ /^acme/i, /^ack/ ] } }
+{ name: { $regex: /acme.*corp/i, $nin: [ 'acmeblahcorp' ] } }
+{ name: "abc"}
