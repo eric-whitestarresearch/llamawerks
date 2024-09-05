@@ -185,7 +185,7 @@ components:
 paths:
   /service_engine/{pack_name}/data_collection:
     get:
-      operationId: service_engine.get_data_collections
+      operationId: data_collection.get_data_collections
       parameters:
         - $ref: "#/components/parameters/pack_name"
         - $ref: "#/components/parameters/collection_name_in_query"
@@ -199,7 +199,7 @@ paths:
       tags:
         - Data Collection
     put:
-      operationId: service_engine.create_data_collection
+      operationId: data_collection.create_data_collection
       parameters:
         - $ref: "#/components/parameters/pack_name"
       requestBody:
@@ -230,7 +230,7 @@ paths:
       tags:
         - Data Collection
     patch:
-      operationId: service_engine.update_data_collection
+      operationId: data_collection.update_data_collection
       parameters:
         - $ref: "#/components/parameters/pack_name"
       requestBody:
@@ -263,7 +263,7 @@ paths:
       tags:
         - Data Collection
     delete:
-      operationId: service_engine.delete_data_collection
+      operationId: data_collection.delete_data_collection
       parameters:
         - $ref: "#/components/parameters/pack_name"
         - $ref: "#/components/parameters/collection_name_in_query_req"
@@ -278,7 +278,7 @@ paths:
         - Data Collection
   /service_engine/{pack_name}/filter:
     get:
-      operationId: service_engine.get_data_collection_filter
+      operationId: data_collection_filter.get_data_collection_filter
       parameters:
         - $ref: "#/components/parameters/pack_name"
         - $ref: "#/components/parameters/filter_name_in_query"
@@ -292,7 +292,7 @@ paths:
       tags:
         - Data Collection Filter
     put:
-      operationId: service_engine.create_data_collection_filter
+      operationId: data_collection_filter.create_data_collection_filter
       parameters:
         - $ref: "#/components/parameters/pack_name"
       requestBody:
@@ -323,7 +323,7 @@ paths:
       tags:
         - Data Collection Filter
     patch:
-      operationId: service_engine.update_data_collection_filter
+      operationId: data_collection_filter.update_data_collection_filter
       parameters:
         - $ref: "#/components/parameters/pack_name"
       requestBody:
@@ -356,7 +356,7 @@ paths:
       tags:
         - Data Collection Filter
     delete:
-      operationId: service_engine.delete_data_collection_filter
+      operationId: data_collection_filter.delete_data_collection_filter
       parameters:
         - $ref: "#/components/parameters/pack_name"
         - $ref: "#/components/parameters/filter_name_in_query_req"
