@@ -52,7 +52,8 @@ class ServiceComponent:
       service_component_name (String): The name of the service component (Optional)
 
     Returns:
-      List: A list of dictonaries that contain the service item definition(s)
+      List: A list of dictonaries that contain the service component definition(s)
+      Int: HTTP status code
     """
 
     if service_component_name:
@@ -78,13 +79,14 @@ class ServiceComponent:
       service_component_name (String): The name of the service component to delete
 
     Returns:
-      Dict: A count of the service items deleted
+      Dict: Key: deleted value: a count of the components deleted
+      Int: HTTP status code
     """
 
     db_filter = {'pack' : pack_name, 'name': service_component_name}
     delete_count = self.db_client.delete_document(self.db_collection, db_filter)
 
-    return {f"{self.component_type}_deleted" : delete_count}, 200
+    return {"deleted" : delete_count}, 200
   
 
   def create_service_component(self,pack_name,service_component_definition):
@@ -96,7 +98,8 @@ class ServiceComponent:
       service_component_definition (Dict): The definition of the service component
     
     Returns:
-      Dict: a dict containing the id of the service component
+      Dict: Key: id value: the id of the new service component
+      Int: HTTP status code
     """
     
     if pack_name != service_component_definition['pack']:
@@ -123,7 +126,8 @@ class ServiceComponent:
       service_component_definition (Dict): The definition of the service component
     
     Returns:
-      String: a string containing the id of the new data collection
+      Dict: Key: updated, value: a count of the updated components
+      Int: HTTP status code
     """
     
     if pack_name != service_component_definition['pack']:
@@ -139,9 +143,9 @@ class ServiceComponent:
     update_count = self.db_client.update_document(self.db_collection, filter, service_component_definition)
 
     if update_count:
-      return { f"{self.component_type}_updated" : update_count }, 202
+      return { "updated" : update_count }, 202
     else:
-      return { f"{self.component_type}_updated" : 0 }, 208
+      return { "updated" : 0 }, 208
       
 
 

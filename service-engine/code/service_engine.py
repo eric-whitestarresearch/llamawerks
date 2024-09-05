@@ -16,6 +16,7 @@
 from connexion import request
 from flask import abort
 from modules.datacollection import DataCollection
+from modules.datacollectionfilter import DataCollectionFilter
 
 def get_data_collections(pack_name, data_collection_name = None):
   """
@@ -27,6 +28,7 @@ def get_data_collections(pack_name, data_collection_name = None):
 
   Returns:
     List: A list of dictonaries that contain the data collection definition(s)
+    Int: HTTP status code
   """
   
   dc = DataCollection(request.state.db_client)
@@ -42,7 +44,8 @@ def delete_data_collection(pack_name, data_collection_name):
     collection_name (String): The name of the data collection to delete
 
   Returns:
-    List: A list of dictonaries that contain the data collection definition(s)
+    Dict: Key: deleted value: a count of the data collection deleted
+    Int: HTTP status code
   """
   
   dc = DataCollection(request.state.db_client)
@@ -58,7 +61,8 @@ def create_data_collection(pack_name,data_collection_definition):
     data_collection_definition (Dict): The definition of the data collection
   
   Returns:
-    Dict: a dict containing the id of the new data collection and index info
+    Dict: Key: id value: the id of the new data collection
+    Int: HTTP status code
   """
   dc = DataCollection(request.state.db_client)
 
@@ -73,9 +77,79 @@ def update_data_collection(pack_name, data_collection_definition):
     data_collection_definition (Dict): The definition of the data collection
   
   Returns:
-    String: a string containing the id of the new data collection
+    Dict: Key: updated, value: a count of the updated data collection
+    Int: HTTP status code
   """
   
   dc = DataCollection(request.state.db_client)
 
   return dc.update_data_collection(pack_name,data_collection_definition)
+
+def get_data_collection_filter(pack_name, filter_name = None):
+  """
+  Reurns the definition of the data collection filter(s)
+
+  Parameters:
+    pack_name (String): The name of the pack to return the data collections for
+    filter_name (String): The name of the data collection filter to retreive (Optional)
+
+  Returns:
+    List: A list of dictonaries that contain the data collection filter definition(s)
+    Int: HTTP status code
+  """
+  
+  dcf = DataCollectionFilter(request.state.db_client)
+  
+  return dcf.get_data_collection_filters(pack_name, filter_name)
+
+
+
+def create_data_collection_filter(pack_name,data_collection_filter_definition):
+  """
+  Creates a new data collection filter
+
+  Parameters:
+    pack_name (String): The name of the pack to create the data collections in
+    data_collection_filter_definition (Dict): The definition of the data collection filter
+  
+  Returns:
+    Dict: Key: id value: the id of the new data collection filter
+    Int: HTTP status code
+  """
+  dcf = DataCollectionFilter(request.state.db_client)
+
+  return dcf.create_data_collection_filter(pack_name,data_collection_filter_definition)
+
+def update_data_collection_filter(pack_name, data_collection_filter_definition):
+  """
+  Updates a data collection_filter
+
+  Parameters:
+    pack_name (String): The name of the pack to create the data collection filter in
+    data_collection_definition (Dict): The definition of the data collection filter
+  
+  Returns:
+    Dict: Key: updated, value: a count of the updated data collection filter
+    Int: HTTP status code
+  """
+  
+  dcf = DataCollectionFilter(request.state.db_client)
+
+  return dcf.update_data_collection_filter(pack_name,data_collection_filter_definition)
+
+def delete_data_collection_filter(pack_name, filter_name):
+  """
+  Deletes a data collection filter
+
+  Parameters:
+    pack_name (String): The name of the pack the data collection filter is in
+    filter_name (String): The name of the data collection filter to delete
+
+  Returns:
+    Dict: Key: deleted value: a count of the data collection filter deleted
+    Int: HTTP status code
+  """
+  
+  dcf = DataCollectionFilter(request.state.db_client)
+
+  return dcf.delete_data_collection_filter(pack_name, filter_name)

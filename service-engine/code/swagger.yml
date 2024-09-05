@@ -15,24 +15,32 @@
 
 openapi: 3.0.0
 info:
-  title: "Llamawerks Service Engine API"
-  description: "API for Llamawerks service engine"
+  title: Llamawerks Service Engine API
+  description: API for Llamawerks service engine
   version: "0.1.0"
 servers:
   - url: "/api"
 
 components:
   schemas:
-    data_collections_deleted:
+    service_component_deleted:
       type: object
       properties:
-        data_collections_deleted:
+        deleted:
           type: integer
-    data_collection_updated:
+          example: 1
+    service_component_updated:
       type: object
       properties:
-        data_collection_updated:
+        updated:
           type: integer
+          example: 1
+    service_component_created:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 66ce0c6f2ee6c75d61eef299
     data_collection_created:
       type: object
       properties:
@@ -45,7 +53,7 @@ components:
             - name_1
             - color_1
     data_collection:
-      type: "object"
+      type: object
       required:
         - name
         - pack
@@ -53,11 +61,11 @@ components:
       additionalProperties: false
       properties:
         name:
-          type: "string"
-          description: "The name of this data collection"
+          type: string
+          description: The name of this data collection
         pack:
-          type: "string"
-          description: "The pack this collection belongs to"
+          type: string
+          description: The pack this collection belongs to
         fields:
           type: array
           items:
@@ -71,75 +79,132 @@ components:
             properties:
               name:
                 type: string
-                description: "The name of the field"
+                description: The name of the field
               type:
                 type: string
                 enum:
-                  - "string"
-                  - "integer"
-                  - "float"
-                  - "datetime"
-                  - "boolean"
-                description: "The type of data in the field"
+                  - string
+                  - integer
+                  - float
+                  - datetime
+                  - boolean
+                description: The type of data in the field
               required:
                 type: boolean
-                description: "Is this a required or optional field"
+                description: Is this a required or optional field
               index:
                 type: boolean
-                description: "Is this field an index, must be of string type"
+                description: Is this field an index, must be of string type
               unique:
                 type: boolean
-                description: "If this is an index field, is it unique"
+                description: If this is an index field, is it unique
+    data_collection_filter:
+      type: object
+      required:
+        - name
+        - pack
+        - filter
+        - variables
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          description: The name of this data collection filter
+        pack:
+          type: string
+          description: The pack this data collection filter belongs to
+        filter:
+          type: object
+          items:
+            type: object
+        variables:
+          type: array
+          description: A list of variables used in the query
+          items:
+            type: object
+            required:
+              - name
+              - type
+            additionalProperties: false
+            properties:
+              name: 
+                type: string
+                description: The name of the variable in the query
+              type:
+                type: string
+                description: The type of the variable
+                enum:
+                  - string
+                  - integer
+                  - float
+                  - datetime
+                  - boolean
   parameters:
     pack_name:
-      name: "pack_name"
-      description: "The name of the pack the component is in"
+      name: pack_name
+      description: The name of the pack the component is in
       in: path
       required: True
       schema:
-        type: "string"
+        type: string
     collection_name:
-      name: "data_collection_name"
-      description: "The name of the data collection to use"
+      name: data_collection_name
+      description: The name of the data collection to use
       in: path
       required: True
       schema:
-        type: "string"
+        type: string
     collection_name_in_query:
-      name: "data_collection_name"
-      description: "The name of the data collection to use"
+      name: data_collection_name
+      description: The name of the data collection to use
       in: query
       required: False
       schema:
-        type: "string"
+        type: string
     collection_name_in_query_req:
-      name: "data_collection_name"
-      description: "The name of the data collection to use"
+      name: data_collection_name
+      description: The name of the data collection to use
       in: query
       required: True
       schema:
-        type: "string"
+        type: string
+    filter_name_in_query:
+      name: filter_name
+      description: The name of the data collection filter to use
+      in: query
+      required: False
+      schema:
+        type: string
+    filter_name_in_query_req:
+      name: filter_name
+      description: The name of the data collection filter to use
+      in: query
+      required: True
+      schema:
+        type: string
 paths:
   /service_engine/{pack_name}/data_collection:
     get:
-      operationId: "service_engine.get_data_collections"
+      operationId: service_engine.get_data_collections
       parameters:
         - $ref: "#/components/parameters/pack_name"
         - $ref: "#/components/parameters/collection_name_in_query"
       responses:
         "200":
-          description: "Get all of the data collections"
+          description: Get all of the data collections
         "204":
-          description: "There are no data collections in the pack"
+          description: There are no data collections in the pack
         "404":
-          description: "Could not find the data collection in the pack"
+          description: Could not find the data collection in the pack
+      tags:
+        - Data Collection
     put:
-      operationId: "service_engine.create_data_collection"
+      operationId: service_engine.create_data_collection
       parameters:
         - $ref: "#/components/parameters/pack_name"
       requestBody:
-        x-body-name: "data_collection_definition"
-        description: "The definition of the data collection"
+        x-body-name: data_collection_definition
+        description: The definition of the data collection
         required: True
         content:
           application/json:
@@ -147,28 +212,30 @@ paths:
               $ref: "#/components/schemas/data_collection"
       responses:
         "200":
-          description: "The data collection already exists, no action taken"
+          description: The data collection already exists, no action taken
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/data_collection_created"
         "201":
-          description: "Successfully created the data collection"
+          description: Successfully created the data collection
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/data_collection_created"
         "400":
-          description: "The body does not meet the schema requirements"
+          description: The body does not meet the schema requirements
         "422":
-          description: "The pack name specified in the URI and the data collection definition do not match"
+          description: The pack name specified in the URI and the data collection definition do not match
+      tags:
+        - Data Collection
     patch:
-      operationId: "service_engine.update_data_collection"
+      operationId: service_engine.update_data_collection
       parameters:
         - $ref: "#/components/parameters/pack_name"
       requestBody:
-        x-body-name: "data_collection_definition"
-        description: "The definition of the data collection"
+        x-body-name: data_collection_definition
+        description: The definition of the data collection
         required: True
         content:
           application/json:
@@ -176,34 +243,131 @@ paths:
               $ref: "#/components/schemas/data_collection"
       responses:
         "202":
-          description: "Data collection definition updated"
+          description: Data collection definition updated
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/data_collection_updated"
+                $ref: "#/components/schemas/service_component_deleted"
         "208":
-          description: "Data collection definition matched existing definition, no change occured "
+          description: Data collection definition matched existing definition, no change occured 
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/data_collection_updated"
+                $ref: "#/components/schemas/service_component_deleted"
         "400":
-          description: "The body does not meet the schema requirements"
+          description: The body does not meet the schema requirements
         "404":
-          description: "The data collection does not exist in the pack. Create it using the put method"
+          description: The data collection does not exist in the pack. Create it using the put method
         "422":
-          description: "The pack name specified in the URI and the data collection definition do not match"
+          description: The pack name specified in the URI and the data collection definition do not match
+      tags:
+        - Data Collection
     delete:
-      operationId: "service_engine.delete_data_collection"
+      operationId: service_engine.delete_data_collection
       parameters:
         - $ref: "#/components/parameters/pack_name"
         - $ref: "#/components/parameters/collection_name_in_query_req"
       responses:
         "200":
-          description: "Data collection deleted"
+          description: Data collection deleted
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/data_collections_deleted"
+                $ref: "#/components/schemas/service_component_deleted"
+      tags:
+        - Data Collection
+  /service_engine/{pack_name}/filter:
+    get:
+      operationId: service_engine.get_data_collection_filter
+      parameters:
+        - $ref: "#/components/parameters/pack_name"
+        - $ref: "#/components/parameters/filter_name_in_query"
+      responses:
+        "200":
+          description: Retreived the filter definition(s)
+        "204":
+          description: There are no filters in the pack
+        "404":
+          description: Could not find the filterin the pack
+      tags:
+        - Data Collection Filter
+    put:
+      operationId: service_engine.create_data_collection_filter
+      parameters:
+        - $ref: "#/components/parameters/pack_name"
+      requestBody:
+        x-body-name: data_collection_filter_definition
+        description: The definition of the data collection filter
+        required: True
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/data_collection_filter"
+      responses:
+        "200":
+          description: The data collection filter already exists, no action taken
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/service_component_created"
+        "201":
+          description: Successfully created the data collection filter
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/service_component_created"
+        "400":
+          description: The body does not meet the schema requirements
+        "422":
+          description: The pack name specified in the URI and the data collection filter definition do not match
+      tags:
+        - Data Collection Filter
+    patch:
+      operationId: service_engine.update_data_collection_filter
+      parameters:
+        - $ref: "#/components/parameters/pack_name"
+      requestBody:
+        x-body-name: data_collection_filter_definition
+        description: The definition of the data collection
+        required: True
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/data_collection_filter"
+      responses:
+        "202":
+          description: Data collection filter definition updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/service_component_deleted"
+        "208":
+          description: Data collection definition filter matched existing definition, no change occured 
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/service_component_deleted"
+        "400":
+          description: The body does not meet the schema requirements
+        "404":
+          description: The data collection filter does not exist in the pack. Create it using the put method
+        "422":
+          description: The pack name specified in the URI and the data collection filter definition do not match
+      tags:
+        - Data Collection Filter
+    delete:
+      operationId: service_engine.delete_data_collection_filter
+      parameters:
+        - $ref: "#/components/parameters/pack_name"
+        - $ref: "#/components/parameters/filter_name_in_query_req"
+      responses:
+        "200":
+          description: Data collection deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/service_component_deleted"
+      tags:
+        - Data Collection Filter
     
         

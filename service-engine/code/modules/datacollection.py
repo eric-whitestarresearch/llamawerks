@@ -50,6 +50,7 @@ class DataCollection(ServiceComponent):
 
     Returns:
       List: A list of dictonaries that contain the data collections definition(s)
+      Int: HTTP status code
     """
 
     return self.get_service_component(pack_name, data_collection_name)
@@ -64,7 +65,8 @@ class DataCollection(ServiceComponent):
       data_collection_name (String): The name of the data collection to delete
 
     Returns:
-      Int: A count of the data collections deleted
+      Dict: Key: deleted value: a count of the data collections deleted
+      Int: HTTP status code
     """
     result = self.delete_service_component(pack_name, data_collection_name)
 
@@ -82,7 +84,8 @@ class DataCollection(ServiceComponent):
       data_collection_definition (Dict): The definition of the data collection
     
     Returns:
-      Dict: a dict containing the id of the data collection and index info
+      Dict: Key: id value: the id of the new data collection
+      Int: HTTP status code
     """
 
     dc_id = self.create_service_component(pack_name, data_collection_definition)
@@ -99,7 +102,8 @@ class DataCollection(ServiceComponent):
       data_collection_definition (Dict): The definition of the data collection
     
     Returns:
-      String: a string containing the id of the new data collection
+      Dict: Key: updated, value: a count of the updated data collections
+      Int: HTTP status code
     """
 
     update_result = self.update_serivce_component(pack_name, data_collection_definition)
@@ -116,6 +120,9 @@ class DataCollection(ServiceComponent):
     Parameters:
       pack_name (String): The name of the pack that contains the data collection
       data_collection_name (String): the name of the data collection
+
+    Returns:
+      None
     
     """
     #Index creation is idempotent. If it already exists, nothing will happen
