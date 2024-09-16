@@ -43,6 +43,25 @@ class ServiceComponent:
 
     self.db_client = db_client
 
+  def service_component_exists(self, pack_name, service_component_name):
+    """
+    Check if a service component exists
+
+    Parameters:
+      pack_name (String): The name of the pack the service item is in
+      service_component_name (String): The name of the service component
+
+    Returns:
+      Bool: True if exist, false if not
+    
+    """
+    db_filter = {"pack": pack_name, "name": service_component_name}
+    service_items = [self.db_client.find_one_in_collection(self.db_collection,db_filter)]
+    if service_items[0]:
+      return True
+    else:
+      return False
+
   def get_service_component(self, pack_name, service_component_name = None):
     """
     Retrieve the service component from the database
@@ -58,12 +77,12 @@ class ServiceComponent:
 
     if service_component_name:
       db_filter = {"pack": pack_name, "name": service_component_name}
-      service_items = [self.db_client.find_one_in_collection(self.db_collection,db_filter)]
-      if not service_items[0]:
+      if not self.service_component_exists(pack_name, service_component_name):
         abort(404,f"Could not find {self.component_type_name} {service_component_name} in pack {pack_name}")
     else:
       db_filter = {"pack": pack_name}
-      service_items = self.db_client.find_all_in_collection(self.db_collection,db_filter)
+      
+    service_items = self.db_client.find_all_in_collection(self.db_collection,db_filter)
 
     if not len(service_items):
       return service_items, 204 #The pack has no service items

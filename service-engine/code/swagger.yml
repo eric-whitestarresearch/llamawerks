@@ -147,9 +147,16 @@ components:
       required: True
       schema:
         type: string
-    collection_name:
+    data_collection_name:
       name: data_collection_name
       description: The name of the data collection to use
+      in: path
+      required: True
+      schema:
+        type: string
+    document_id:
+      name: document_id
+      description: The id of the document
       in: path
       required: True
       schema:
@@ -247,13 +254,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/service_component_deleted"
+                $ref: "#/components/schemas/service_component_updated"
         "208":
           description: Data collection definition matched existing definition, no change occured 
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/service_component_deleted"
+                $ref: "#/components/schemas/service_component_updated"
         "400":
           description: The body does not meet the schema requirements
         "404":
@@ -369,5 +376,167 @@ paths:
                 $ref: "#/components/schemas/service_component_deleted"
       tags:
         - Data Collection Filter
+  /service_engine/{pack_name}/data_collection/{data_collection_name}:
+    get:
+      operationId: document.get_documents
+      parameters:
+        - $ref: "#/components/parameters/pack_name"
+        - $ref: "#/components/parameters/data_collection_name"
+      responses:
+        "200":
+          description: Returned all of the data collection documents
+        "204":
+          description: There are no documents in the data collection
+        "404":
+          description: The specified data collection does not exist in the pack
+      tags:
+        - Documents
+    post:
+      operationId: document.get_document_with_filter
+      parameters:
+        - $ref: "#/components/parameters/pack_name"
+        - $ref: "#/components/parameters/data_collection_name"
+        - $ref: "#/components/parameters/filter_name_in_query_req"
+      requestBody:
+        x-body-name: filter_variables
+        description: Variables for the filter
+        required: True
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Get all of the data collections
+        "204":
+          description: There are no documents in the data collection that match the filter
+        "404":
+          description: The specified data collection or filter does not exist in the pack
+      tags:
+        - Documents
+    put:
+      operationId: document.create_document
+      parameters:
+        - $ref: "#/components/parameters/pack_name"
+        - $ref: "#/components/parameters/data_collection_name"
+      requestBody:
+        x-body-name: document
+        description: The document to add
+        required: True
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Created the document
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/service_component_created"
+        "404":
+          description: The specified data collection does not exist in the pack
+      tags:
+        - Documents
+    patch:
+      operationId: document.update_document_by_filter
+      parameters:
+        - $ref: "#/components/parameters/pack_name"
+        - $ref: "#/components/parameters/data_collection_name"
+        - $ref: "#/components/parameters/filter_name_in_query_req"
+      requestBody:
+        x-body-name: document_and_vars
+        description: The updates to the document and the variables
+        required: True
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                variables:
+                  type: object
+                document:
+                  type: object
+              required:
+                - variables
+                - document
+      responses:
+        "200":
+          description: Updated the document
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/service_component_updated"
+        "404":
+          description: The specified data collection or filter does not exist in the pack
+      tags:
+        - Documents
+  /service_engine/{pack_name}/data_collection/{data_collection_name}/id/{document_id}:
+    get:
+      operationId: document.get_document_by_id
+      parameters:
+        - $ref: "#/components/parameters/pack_name"
+        - $ref: "#/components/parameters/data_collection_name"
+        - $ref: "#/components/parameters/document_id"
+      responses:
+        "200":
+          description: Return the data collection document matching the ID.
+        "404":
+          description: The specified data collection does not exist in the pack or a document with the ID does not exist
+      tags:
+        - Documents
+    patch:
+      operationId: document.update_document_by_id
+      parameters:
+        - $ref: "#/components/parameters/pack_name"
+        - $ref: "#/components/parameters/data_collection_name"
+        - $ref: "#/components/parameters/document_id"
+      requestBody:
+        x-body-name: document
+        description: The updates to the document and the variables
+        required: True
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                document:
+                  type: object
+              required:
+                - document
+      responses:
+        "200":
+          description: Updated the document
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/service_component_updated"
+        "404":
+          description: The specified data collection does not exist in the pack
+      tags:
+        - Documents
+    delete:
+      operationId: document.delete_document_by_id
+      parameters:
+        - $ref: "#/components/parameters/pack_name"
+        - $ref: "#/components/parameters/data_collection_name"
+        - $ref: "#/components/parameters/document_id"
+      responses:
+        "200":
+          description: Deleted the document
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/service_component_deleted"
+        "404":
+          description: The specified data collectin does not exist in the pack
+      tags:
+        - Documents
+
+      
+
+
+
+
     
         
