@@ -21,10 +21,10 @@ def get_documents(pack_name, data_collection_name):
 
   return dcd.get_documents(pack_name, data_collection_name)
 
-def get_document_with_filter(pack_name, data_collection_name, filter_name, filter_variables):
+def get_document_with_filter(pack_name, data_collection_name, filter_name, filter_variables, project):
   dcd = DataCollectionDocument(request.state.db_client)
 
-  return dcd.get_document_with_filter(pack_name, data_collection_name, filter_name, filter_variables)
+  return dcd.get_document_with_filter(pack_name, data_collection_name, filter_name, filter_variables, project)
 
 def create_document(pack_name, data_collection_name, document):
   dcd = DataCollectionDocument(request.state.db_client)

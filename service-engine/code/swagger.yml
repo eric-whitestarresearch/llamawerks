@@ -103,7 +103,9 @@ components:
       required:
         - name
         - pack
+        - data_collection
         - filter
+        - project
         - variables
       additionalProperties: false
       properties:
@@ -113,10 +115,17 @@ components:
         pack:
           type: string
           description: The pack this data collection filter belongs to
+        data_collection:
+          type: string
+          description: The data collection this filter should be used against
         filter:
           type: object
           items:
             type: object
+        project:
+          type: array
+          items:
+            type: string
         variables:
           type: array
           description: A list of variables used in the query
@@ -143,6 +152,13 @@ components:
     pack_name:
       name: pack_name
       description: The name of the pack the component is in
+      in: path
+      required: True
+      schema:
+        type: string
+    service_name:
+      name: service_name
+      description: The name of the service
       in: path
       required: True
       schema:
@@ -189,6 +205,13 @@ components:
       required: True
       schema:
         type: string
+    project_in_query_req:
+      name: project
+      description: Return all fields or just fields selected in the filter
+      in: query
+      required: True
+      schema:
+        type: boolean
 paths:
   /service_engine/{pack_name}/data_collection:
     get:
@@ -397,6 +420,7 @@ paths:
         - $ref: "#/components/parameters/pack_name"
         - $ref: "#/components/parameters/data_collection_name"
         - $ref: "#/components/parameters/filter_name_in_query_req"
+        - $ref: "#/components/parameters/project_in_query_req"
       requestBody:
         x-body-name: filter_variables
         description: Variables for the filter
@@ -532,6 +556,46 @@ paths:
           description: The specified data collectin does not exist in the pack
       tags:
         - Documents
+  /service_engine/{pack_name}/service/{service_name}:
+    get:
+      operationId: service.get_service
+      parameters:
+        - $ref: "#/components/parameters/pack_name"
+        - $ref: "#/components/parameters/service_name"
+      responses:
+        "200":
+          description: Return the data collection document matching the ID.
+        "404":
+          description: The specified data collection does not exist in the pack or a document with the ID does not exist
+      tags:
+        - Service
+    put:
+      operationId: service.create_service
+      parameters:
+        - $ref: "#/components/parameters/pack_name"
+        - $ref: "#/components/parameters/service_name"
+      requestBody:
+        x-body-name: service
+        description: The service definition
+        required: True
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                document:
+                  type: object
+              required:
+                - service
+      responses:
+        "200":
+          description: Return the data collection document matching the ID.
+        "404":
+          description: The specified data collection does not exist in the pack or a document with the ID does not exist
+      tags:
+        - Service
+
+
 
       
 

@@ -1,0 +1,19 @@
+{
+  "pack_name" :"blarf",
+  "service_name" : "narf",
+  "parameter" : {
+    "name" : {
+      "source" : "input",
+      "ui_type" : "string"
+    },
+    "age" : {
+      "source" : "input",
+      "ui_type" : "integer"
+    },
+    "color" : {
+      "source" : "data",
+      "filter_name" : "colors",
+      "ui_type" : "drop_down"
+    }
+  }
+}

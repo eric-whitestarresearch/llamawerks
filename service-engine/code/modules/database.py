@@ -157,7 +157,7 @@ class Database:
 
     return
 
-  def find_all_in_collection(self, collection, filter):
+  def find_all_in_collection(self, collection, filter, projection = {}):
     """
     Find all documents in a collection
 
@@ -175,7 +175,7 @@ class Database:
     db_collection = db[collection]
 
     try:
-      results = db_collection.find(filter)  
+      results = db_collection.find(filter, projection)  
     finally:
       self.return_db_connection(connection)
 

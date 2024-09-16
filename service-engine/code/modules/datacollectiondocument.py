@@ -92,7 +92,7 @@ class DataCollectionDocument():
     else:
       return documents, 204
   
-  def get_document_with_filter(self, pack_name, data_collection_name, filter_name, filter_variables):
+  def get_document_with_filter(self, pack_name, data_collection_name, filter_name, filter_variables, project):
     """
     Returns documents that match a data collection filter
 
@@ -112,15 +112,18 @@ class DataCollectionDocument():
 
     db_collection = f"{pack_name}.{data_collection_name}"
 
-    db_filter = self.generate_db_filter(pack_name, filter_name, filter_variables)
-    documents = self.db_client.find_all_in_collection(db_collection,db_filter)
+    gen_filter_result = self.generate_db_filter_projection(pack_name, filter_name, filter_variables, gen_projection=project)
+    db_filter = gen_filter_result[0]
+    db_projection = gen_filter_result[1]
+    
+    documents = self.db_client.find_all_in_collection(db_collection,db_filter, db_projection)
 
     if len(documents) > 0:
       return documents, 200
     else:
       return documents, 204
   
-  def generate_db_filter(self, pack_name, filter_name, filter_variables):
+  def generate_db_filter_projection(self, pack_name, filter_name, filter_variables, gen_projection = False):
     """
     Generates the the filter used by the database from a data collection filter
     Will apply the variables so it is in a form useable by the database
@@ -147,7 +150,13 @@ class DataCollectionDocument():
       db_filter_string = db_filter_string.replace(f"#{var['name']}#",filter_variables[var['name']])
     db_filter = literal_eval(db_filter_string)
     
-    return db_filter
+    if not gen_projection:
+      return db_filter, {} 
+    else:
+      fields = result[0][0]['project']
+      projection = {fields[i]: 1 for i in range(0, len(fields))}
+      projection['_id'] = 0 
+      return db_filter, projection
   
   def create_document(self, pack_name, data_collection_name, document):
     """
@@ -189,7 +198,7 @@ class DataCollectionDocument():
     """
     self.check_data_collection_exists(pack_name, data_collection_name)
 
-    db_filter = self.generate_db_filter(pack_name, filter_name, filter_variables)
+    db_filter = (self.generate_db_filter_projection(pack_name, filter_name, filter_variables, gen_projection=False))[0]
     db_collection = f"{pack_name}.{data_collection_name}"
 
     result = self.db_client.update_document(db_collection, db_filter, document_updates, upsert=False)
