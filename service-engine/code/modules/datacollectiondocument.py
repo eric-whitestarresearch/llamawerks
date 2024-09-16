@@ -15,6 +15,7 @@
 
 from flask import abort
 from .datacollectionfilter import DataCollectionFilter
+from .datacollection import DataCollection
 from ast import literal_eval
 from bson.objectid import ObjectId
 
@@ -26,11 +27,13 @@ class DataCollectionDocument():
   Attributes:
     db_client (Database): An instance of the Database class used to interact with the database
     dcf (DataCollectionFilter): An instance of the DataCollectionFilter class used to interact with data collection filters
+    dc (DataCollection): An instance of the DataCollection class used to interact with data collections
   
   """
 
   db_client = None
   dcf = None
+  dc =  None
 
   def __init__(self,db_client):
     """
@@ -46,6 +49,24 @@ class DataCollectionDocument():
 
     self.db_client = db_client
     self.dcf =  DataCollectionFilter(self.db_client)
+    self.dc = DataCollection(self.db_client)
+
+  def check_data_collection_exists(self, pack_name, data_collection_name):
+    """
+    Check if a data collection exists, abort with a 404 if it does not
+
+    Parameters:
+      pack_name (String): The name of the pack the service item is in
+      data_collection_name (String): The name of the data collection
+
+    Returns
+      None
+    """
+
+    if not self.dc.data_collection_exist(pack_name, data_collection_name):
+      abort(404, f"The data collection {data_collection_name}, does not exist in pack {pack_name}")
+    
+    return
 
   def get_documents(self, pack_name, data_collection_name):
     """
@@ -59,12 +80,17 @@ class DataCollectionDocument():
       Dict: A dictonary containing the documents
       Int: HTTP status code
     """
+    self.check_data_collection_exists(pack_name, data_collection_name)
+
     db_collection = f"{pack_name}.{data_collection_name}"
 
     db_filter = {}
     documents = self.db_client.find_all_in_collection(db_collection,db_filter)
 
-    return documents, 200
+    if len(documents) > 0:
+      return documents, 200
+    else:
+      return documents, 204
   
   def get_document_with_filter(self, pack_name, data_collection_name, filter_name, filter_variables):
     """
@@ -82,12 +108,17 @@ class DataCollectionDocument():
       Int: HTTP status code
 
     """
+    self.check_data_collection_exists(pack_name, data_collection_name)
+
     db_collection = f"{pack_name}.{data_collection_name}"
 
     db_filter = self.generate_db_filter(pack_name, filter_name, filter_variables)
     documents = self.db_client.find_all_in_collection(db_collection,db_filter)
 
-    return documents, 200
+    if len(documents) > 0:
+      return documents, 200
+    else:
+      return documents, 204
   
   def generate_db_filter(self, pack_name, filter_name, filter_variables):
     """
@@ -105,18 +136,17 @@ class DataCollectionDocument():
       Dict: A mongo database filter
 
     """
+    #If the filter is not found the request will abort with a 404
     result = self.dcf.get_data_collection_filters(pack_name,filter_name)
     
-    if result[1] == 200: #If the filter was found
-      db_filter = result[0][0]['filter']
-      db_filter_string = str(db_filter)
-      variables = result[0][0]['variables']
-      for var in variables:
-        db_filter_string = db_filter_string.replace(f"#{var['name']}#",filter_variables[var['name']])
-      db_filter = literal_eval(db_filter_string)
-    else:
-      abort(404, f"Could not find the filter {filter_name} in pack {pack_name}") #The only other option is no filter was found
-
+    
+    db_filter = result[0][0]['filter']
+    db_filter_string = str(db_filter)
+    variables = result[0][0]['variables']
+    for var in variables:
+      db_filter_string = db_filter_string.replace(f"#{var['name']}#",filter_variables[var['name']])
+    db_filter = literal_eval(db_filter_string)
+    
     return db_filter
   
   def create_document(self, pack_name, data_collection_name, document):
@@ -133,6 +163,8 @@ class DataCollectionDocument():
       Int: HTTP status code
 
     """
+    self.check_data_collection_exists(pack_name, data_collection_name)
+
     db_collection = f"{pack_name}.{data_collection_name}"
     result = self.db_client.insert_document(db_collection, document)
 
@@ -155,6 +187,8 @@ class DataCollectionDocument():
       Int: HTTP status code
     
     """
+    self.check_data_collection_exists(pack_name, data_collection_name)
+
     db_filter = self.generate_db_filter(pack_name, filter_name, filter_variables)
     db_collection = f"{pack_name}.{data_collection_name}"
 
@@ -176,12 +210,17 @@ class DataCollectionDocument():
       Int: HTTP status code
 
     """
+    self.check_data_collection_exists(pack_name, data_collection_name)
+
     db_collection = f"{pack_name}.{data_collection_name}"
 
     db_filter = {"_id": ObjectId(document_id)}
     documents = self.db_client.find_one_in_collection(db_collection,db_filter)
 
-    return documents, 200
+    if not documents:
+      abort(404, f"A document with id {document_id} not found in data collection {data_collection_name} in pack {pack_name}")
+    else:
+      return documents, 200
   
   def update_document_by_id(self, pack_name, data_collection_name, document_id, document):
     """
@@ -198,6 +237,8 @@ class DataCollectionDocument():
       Int: HTTP status code
     
     """
+    self.check_data_collection_exists(pack_name, data_collection_name)
+
     db_collection = f"{pack_name}.{data_collection_name}"
     db_filter = {"_id": ObjectId(document_id)}
 
@@ -219,6 +260,8 @@ class DataCollectionDocument():
       Int: HTTP status code
     
     """
+    self.check_data_collection_exists(pack_name, data_collection_name)
+
     db_collection = f"{pack_name}.{data_collection_name}"
     db_filter = {"_id": ObjectId(document_id)}
 

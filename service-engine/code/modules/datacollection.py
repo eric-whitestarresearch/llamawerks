@@ -40,6 +40,20 @@ class DataCollection(ServiceComponent):
   component_type = "data_collection"
   component_type_name = "data collection"
 
+  def data_collection_exist(self, pack_name, data_collection_name):
+    """
+    Check if a data collection exists
+
+    Parameters:
+      pack_name (String): The name of the pack the service item is in
+      data_collection_name (String): The name of the data collection
+
+    Returns:
+      Bool: True if exist, false if not
+    
+    """
+    return self.service_component_exists(pack_name, data_collection_name)
+
   def get_data_collections(self, pack_name, data_collection_name = None):
     """
     Retrieve the data collection definition from the database

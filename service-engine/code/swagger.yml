@@ -254,13 +254,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/service_component_deleted"
+                $ref: "#/components/schemas/service_component_updated"
         "208":
           description: Data collection definition matched existing definition, no change occured 
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/service_component_deleted"
+                $ref: "#/components/schemas/service_component_updated"
         "400":
           description: The body does not meet the schema requirements
         "404":
@@ -384,11 +384,11 @@ paths:
         - $ref: "#/components/parameters/data_collection_name"
       responses:
         "200":
-          description: Get all of the data collections
+          description: Returned all of the data collection documents
         "204":
-          description: There are no data collections in the pack
+          description: There are no documents in the data collection
         "404":
-          description: Could not find the data collection in the pack
+          description: The specified data collection does not exist in the pack
       tags:
         - Documents
     post:
@@ -408,6 +408,10 @@ paths:
       responses:
         "200":
           description: Get all of the data collections
+        "204":
+          description: There are no documents in the data collection that match the filter
+        "404":
+          description: The specified data collection or filter does not exist in the pack
       tags:
         - Documents
     put:
@@ -426,6 +430,12 @@ paths:
       responses:
         "200":
           description: Created the document
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/service_component_created"
+        "404":
+          description: The specified data collection does not exist in the pack
       tags:
         - Documents
     patch:
@@ -453,6 +463,12 @@ paths:
       responses:
         "200":
           description: Updated the document
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/service_component_updated"
+        "404":
+          description: The specified data collection or filter does not exist in the pack
       tags:
         - Documents
   /service_engine/{pack_name}/data_collection/{data_collection_name}/id/{document_id}:
@@ -464,11 +480,9 @@ paths:
         - $ref: "#/components/parameters/document_id"
       responses:
         "200":
-          description: Get all of the data collections
-        "204":
-          description: There are no data collections in the pack
+          description: Return the data collection document matching the ID.
         "404":
-          description: Could not find the data collection in the pack
+          description: The specified data collection does not exist in the pack or a document with the ID does not exist
       tags:
         - Documents
     patch:
@@ -493,6 +507,12 @@ paths:
       responses:
         "200":
           description: Updated the document
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/service_component_updated"
+        "404":
+          description: The specified data collection does not exist in the pack
       tags:
         - Documents
     delete:
@@ -504,6 +524,12 @@ paths:
       responses:
         "200":
           description: Deleted the document
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/service_component_deleted"
+        "404":
+          description: The specified data collectin does not exist in the pack
       tags:
         - Documents
 
