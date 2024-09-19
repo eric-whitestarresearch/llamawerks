@@ -1,0 +1,45 @@
+#     Llamaflow - A self service portal with runbook automation
+#     Copyright (C) 2024  Whitestar Research LLC
+#
+#     Licensed under the Apache License, Version 2.0 (the 'License');
+#     you may not use this file except in compliance with the License.
+#     You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#      Unless required by applicable law or agreed to in writing, software
+#      distributed under the License is distributed on an 'AS IS' BASIS,
+#      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#      See the License for the specific language governing permissions and
+#      limitations under the License.
+
+operationId: data_collection_filter.create_data_collection_filter
+parameters:
+  - $ref: "../../../../parameters/_index.yaml#/pack_name"
+requestBody:
+  x-body-name: data_collection_filter_definition
+  description: The definition of the data collection filter
+  required: True
+  content:
+    application/json:
+      schema:
+        $ref: "../../../../schemas/_index.yaml#/data_collection_filter"
+responses:
+  "200":
+    description: The data collection filter already exists, no action taken
+    content:
+      application/json:
+        schema:
+          $ref: "../../../../schemas/_index.yaml#/service_component_created"
+  "201":
+    description: Successfully created the data collection filter
+    content:
+      application/json:
+        schema:
+          $ref: "../../../../schemas/_index.yaml#/service_component_created"
+  "400":
+    description: The body does not meet the schema requirements
+  "422":
+    description: The pack name specified in the URI and the data collection filter definition do not match
+tags:
+  - Data Collection Filter

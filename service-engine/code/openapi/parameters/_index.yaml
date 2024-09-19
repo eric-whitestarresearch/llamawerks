@@ -1,0 +1,33 @@
+#     Llamaflow - A self service portal with runbook automation
+#     Copyright (C) 2024  Whitestar Research LLC
+#
+#     Licensed under the Apache License, Version 2.0 (the 'License');
+#     you may not use this file except in compliance with the License.
+#     You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#      Unless required by applicable law or agreed to in writing, software
+#      distributed under the License is distributed on an 'AS IS' BASIS,
+#      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#      See the License for the specific language governing permissions and
+#      limitations under the License.
+
+pack_name:
+  $ref: "./required/path/pack_name.yaml"
+service_name:
+  $ref: "./required/path/service_name.yaml"
+data_collection_name:
+  $ref: "./required/path/data_collection_name.yaml"
+document_id:
+  $ref: "./required/path/document_id.yaml"
+collection_name_in_query:
+  $ref: "./optional/query/collection_name.yaml"
+collection_name_in_query_req:
+  $ref: "./required/query/collection_name.yaml"
+filter_name_in_query:
+  $ref: "./optional/query/filter_name.yaml"
+filter_name_in_query_req:
+  $ref: "./required/query/filter_name.yaml"
+project_in_query_req:
+  $ref: "./required/query/project.yaml"

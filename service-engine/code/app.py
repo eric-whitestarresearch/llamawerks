@@ -30,7 +30,7 @@ async def lifespan_handler(app: ConnexionMiddleware) -> typing.AsyncIterator:
     db_client.close_all_connections()
 
 app = App(__name__, specification_dir="./", lifespan=lifespan_handler)
-app.add_api("swagger.yml")
+app.add_api("openapi.yaml")
 
 @app.route("/")
 def home():

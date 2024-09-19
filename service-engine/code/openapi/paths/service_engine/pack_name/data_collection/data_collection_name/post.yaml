@@ -1,0 +1,38 @@
+#     Llamaflow - A self service portal with runbook automation
+#     Copyright (C) 2024  Whitestar Research LLC
+#
+#     Licensed under the Apache License, Version 2.0 (the 'License');
+#     you may not use this file except in compliance with the License.
+#     You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#      Unless required by applicable law or agreed to in writing, software
+#      distributed under the License is distributed on an 'AS IS' BASIS,
+#      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#      See the License for the specific language governing permissions and
+#      limitations under the License.
+
+operationId: document.get_document_with_filter
+parameters:
+  - $ref: "../../../../../parameters/_index.yaml#/pack_name"
+  - $ref: "../../../../../parameters/_index.yaml#/data_collection_name"
+  - $ref: "../../../../../parameters/_index.yaml#/filter_name_in_query_req"
+  - $ref: "../../../../../parameters/_index.yaml#/project_in_query_req"
+requestBody:
+  x-body-name: filter_variables
+  description: Variables for the filter
+  required: True
+  content:
+    application/json:
+      schema:
+        type: object
+responses:
+  "200":
+    description: Get all of the data collections
+  "204":
+    description: There are no documents in the data collection that match the filter
+  "404":
+    description: The specified data collection or filter does not exist in the pack
+tags:
+  - Documents
