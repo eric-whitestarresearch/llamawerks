@@ -21,5 +21,7 @@
    $ref: "./service_engine/pack_name/data_collection/data_collection_name/_index.yaml"
 /service_engine/{pack_name}/data_collection/{data_collection_name}/id/{document_id}:
   $ref: "./service_engine/pack_name/data_collection/data_collection_name/id/document_id/_index.yaml"
-/service_engine/{pack_name}/service/{service_name}:
-  $ref: "./service_engine/pack_name/service/service_name/_index.yaml"
+/service_engine/{pack_name}/service/:
+  $ref: "./service_engine/pack_name/service/_index.yaml"
+# /service_engine/{pack_name}/service/{service_name}:
+#   $ref: "./service_engine/pack_name/service/service_name/_index.yaml"

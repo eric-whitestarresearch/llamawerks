@@ -17,7 +17,7 @@ from connexion import request
 from modules.service import Service
 
 
-def get_services(pack_name, data_collection_name = None):
+def get_services(pack_name, service_name = None):
   """
   Reurns the definition of the service(s)
 
@@ -32,9 +32,9 @@ def get_services(pack_name, data_collection_name = None):
   
   service = Service(request.state.db_client)
   
-  return service.get_services(pack_name, data_collection_name)
+  return service.get_services(pack_name, service_name)
   
-def delete_service(pack_name, data_collection_name):
+def delete_service(pack_name, service_name):
   """
   Deletes a service
 
@@ -49,15 +49,15 @@ def delete_service(pack_name, data_collection_name):
   
   service = Service(request.state.db_client)
 
-  return service.delete_service(pack_name, data_collection_name)
+  return service.delete_service(pack_name, service_name)
 
-def create_service(pack_name,data_collection_definition):
+def create_service(pack_name,service_definition):
   """
   Creates a new service
 
   Parameters:
     pack_name (String): The name of the pack to create the services in
-    data_collection_definition (Dict): The definition of the service
+    service_definition (Dict): The definition of the service
   
   Returns:
     Dict: Key: id value: the id of the new service
@@ -65,15 +65,15 @@ def create_service(pack_name,data_collection_definition):
   """
   service = Service(request.state.db_client)
 
-  return service.create_service(pack_name,data_collection_definition)
+  return service.create_service(pack_name,service_definition)
 
-def update_service(pack_name, data_collection_definition):
+def update_service(pack_name, service_definition):
   """
   Updates a service
 
   Parameters:
     pack_name (String): The name of the pack to the service is in
-    data_collection_definition (Dict): The definition of the service
+    service_definition (Dict): The definition of the service
   
   Returns:
     Dict: Key: updated, value: a count of the updated service
@@ -82,4 +82,4 @@ def update_service(pack_name, data_collection_definition):
   
   service = Service(request.state.db_client)
 
-  return service.update_service(pack_name,data_collection_definition)
+  return service.update_service(pack_name,service_definition)

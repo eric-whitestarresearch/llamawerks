@@ -13,17 +13,16 @@
 #      See the License for the specific language governing permissions and
 #      limitations under the License.
 
-service_component_deleted:
-  $ref: "./service_component_deleted.yaml"
-service_component_updated:
-  $ref: "./service_component_updated.yaml"
-service_component_created:
-  $ref: "./service_component_created.yaml"
-data_collection_created:
-  $ref: "./data_collection_created.yaml"
-data_collection:
-  $ref: "./data_collection.yaml"
-data_collection_filter:
-  $ref: "./data_collection_filter.yaml"
-service:
-  $ref: "./service.yaml"
+operationId: service.get_services
+parameters:
+  - $ref: "../../../../parameters/_index.yaml#/pack_name"
+  - $ref: "../../../../parameters/_index.yaml#/service_name_in_query"
+responses:
+  "200":
+    description: Retreived the service definition(s)
+  "204":
+    description: There are no services in the pack
+  "404":
+    description: Could not find the service in the pack
+tags:
+  - Service

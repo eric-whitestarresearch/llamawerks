@@ -13,17 +13,11 @@
 #      See the License for the specific language governing permissions and
 #      limitations under the License.
 
-service_component_deleted:
-  $ref: "./service_component_deleted.yaml"
-service_component_updated:
-  $ref: "./service_component_updated.yaml"
-service_component_created:
-  $ref: "./service_component_created.yaml"
-data_collection_created:
-  $ref: "./data_collection_created.yaml"
-data_collection:
-  $ref: "./data_collection.yaml"
-data_collection_filter:
-  $ref: "./data_collection_filter.yaml"
-service:
-  $ref: "./service.yaml"
+type: object
+properties:
+  document:
+    type: object
+required:
+  - pack
+  - name
+  - parameter

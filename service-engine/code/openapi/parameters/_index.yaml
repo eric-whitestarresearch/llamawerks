@@ -31,3 +31,7 @@ filter_name_in_query_req:
   $ref: "./required/query/filter_name.yaml"
 project_in_query_req:
   $ref: "./required/query/project.yaml"
+service_name_in_query:
+  $ref: "./optional/query/service_name.yaml"
+service_name_in_query_req:
+  $ref: "./required/query/service_name.yaml"

@@ -1,6 +1,6 @@
 {
-  "pack_name" :"blarf",
-  "service_name" : "narf",
+  "pack" :"blarf",
+  "name" : "narf",
   "parameter" : {
     "name" : {
       "source" : "input",
